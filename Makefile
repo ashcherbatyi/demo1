@@ -25,14 +25,15 @@ windows: TARGETOS = windows
 windows: TARGETARCH = amd64
 windows: login build image push
 
-build: format get
-	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o ${APP}-${TARGETOS}-${TARGETARCH}
-
 format:
 	gofmt -s -w ./
 
 get:
 	go get
+
+build: format get
+	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o ${APP}-${TARGETOS}-${TARGETARCH}
+
 
 image: build
 	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETOS}-${TARGETARCH} --build-arg BINARY=${APP}-${TARGETOS}-${TARGETARCH}
