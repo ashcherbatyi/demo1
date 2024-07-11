@@ -16,7 +16,10 @@ all: linux arm macos windows
 
 clean:
 	rm -rf $(BUILD_DIR)
-	docker rmi -f $(LINUX_IMAGE_TAG) $(ARM_IMAGE_TAG) $(MACOS_IMAGE_TAG) $(WINDOWS_IMAGE_TAG) || true
+	- docker rmi -f $(LINUX_IMAGE_TAG) || true
+	- docker rmi -f $(ARM_IMAGE_TAG) || true
+	- docker rmi -f $(MACOS_IMAGE_TAG) || true
+	- docker rmi -f $(WINDOWS_IMAGE_TAG) || true
 
 linux:
 	mkdir -p $(BUILD_DIR)
