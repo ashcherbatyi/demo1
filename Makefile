@@ -12,13 +12,6 @@ BUILD_DIR=build
 
 all: linux arm macos windows
 
-clean:
-	rm -rf $(BUILD_DIR)
-	- docker rmi -f $(LINUX_IMAGE_TAG) || true
-	- docker rmi -f $(ARM_IMAGE_TAG) || true
-	- docker rmi -f $(MACOS_IMAGE_TAG) || true
-	- docker rmi -f $(WINDOWS_IMAGE_TAG) || true
-
 linux:
 	mkdir -p $(BUILD_DIR)
 	GOOS=linux GOARCH=amd64 go build -o $(BUILD_DIR)/$(APP_NAME)-linux
@@ -46,3 +39,10 @@ docker-build-macos: macos
 
 docker-build-windows: windows
 	docker build -t $(WINDOWS_IMAGE_TAG) --build-arg BINARY=$(BUILD_DIR)/$(APP_NAME)-windows.exe .
+
+clean:
+	@if [ -d "$(BUILD_DIR)" ]; then rm -rf $(BUILD_DIR); fi
+	@if docker images $(LINUX_IMAGE_TAG) | grep -q $(LINUX_IMAGE_TAG); then docker rmi -f $(LINUX_IMAGE_TAG); fi
+	@if docker images $(ARM_IMAGE_TAG) | grep -q $(ARM_IMAGE_TAG); then docker rmi -f $(ARM_IMAGE_TAG); fi
+	@if docker images $(MACOS_IMAGE_TAG) | grep -q $(MACOS_IMAGE_TAG); then docker rmi -f $(MACOS_IMAGE_TAG); fi
+	@if docker images $(WINDOWS_IMAGE_TAG) | grep -q $(WINDOWS_IMAGE_TAG); then docker rmi -f $(WINDOWS_IMAGE_TAG); fi
