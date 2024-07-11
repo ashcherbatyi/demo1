@@ -39,8 +39,11 @@ push: image
 	docker push ${REGISTRY}/${APP}:${VERSION}-${TARGETOS}-${TARGETARCH}
 
 clean:
-	-rm -f ${APP}-linux-amd64 ${APP}-linux-arm64 ${APP}-darwin-amd64 ${APP}-windows-amd64.exe
-	-docker rmi -f ${REGISTRY}/${APP}:${VERSION}-linux-amd64 || true
-	-docker rmi -f ${REGISTRY}/${APP}:${VERSION}-linux-arm64 || true
-	-docker rmi -f ${REGISTRY}/${APP}:${VERSION}-darwin-amd64 || true
-	-docker rmi -f ${REGISTRY}/${APP}:${VERSION}-windows-amd64 || true
+	@if [ -f ${APP}-linux-amd64 ]; then rm -f ${APP}-linux-amd64; fi
+	@if [ -f ${APP}-linux-arm64 ]; then rm -f ${APP}-linux-arm64; fi
+	@if [ -f ${APP}-darwin-amd64 ]; then rm -f ${APP}-darwin-amd64; fi
+	@if [ -f ${APP}-windows-amd64.exe ]; then rm -f ${APP}-windows-amd64.exe; fi
+	@if docker images -q ${REGISTRY}/${APP}:${VERSION}-linux-amd64; then docker rmi -f ${REGISTRY}/${APP}:${VERSION}-linux-amd64; fi
+	@if docker images -q ${REGISTRY}/${APP}:${VERSION}-linux-arm64; then docker rmi -f ${REGISTRY}/${APP}:${VERSION}-linux-arm64; fi
+	@if docker images -q ${REGISTRY}/${APP}:${VERSION}-darwin-amd64; then docker rmi -f ${REGISTRY}/${APP}:${VERSION}-darwin-amd64; fi
+	@if docker images -q ${REGISTRY}/${APP}:${VERSION}-windows-amd64; then docker rmi -f ${REGISTRY}/${APP}:${VERSION}-windows-amd64; fi
