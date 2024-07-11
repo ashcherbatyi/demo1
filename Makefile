@@ -8,19 +8,21 @@ all: linux arm macos windows
 
 linux:
 	GOOS=linux GOARCH=amd64 go build -o $(BINARY_NAME)-linux-amd64
-	docker build -t $(IMAGE_TAG):linux-amd64 -f Dockerfile --build-arg BINARY=$(BINARY_NAME)-linux-amd64 .
 
 arm:
 	GOOS=linux GOARCH=arm64 go build -o $(BINARY_NAME)-linux-arm64
-	docker build -t $(IMAGE_TAG):linux-arm64 -f Dockerfile --build-arg BINARY=$(BINARY_NAME)-linux-arm64 .
 
 macos:
 	GOOS=darwin GOARCH=amd64 go build -o $(BINARY_NAME)-darwin-amd64
-	docker build -t $(IMAGE_TAG):darwin-amd64 -f Dockerfile --build-arg BINARY=$(BINARY_NAME)-darwin-amd64 .
 
 windows:
 	GOOS=windows GOARCH=amd64 go build -o $(BINARY_NAME)-windows-amd64.exe
-	docker build -t $(IMAGE_TAG):windows-amd64 -f Dockerfile --build-arg BINARY=$(BINARY_NAME)-windows-amd64.exe .
+
+image: linux arm macos windows
+	docker build -t $(IMAGE_TAG):linux-amd64 --build-arg BINARY=$(BINARY_NAME)-linux-amd64 .
+	docker build -t $(IMAGE_TAG):linux-arm64 --build-arg BINARY=$(BINARY_NAME)-linux-arm64 .
+	docker build -t $(IMAGE_TAG):darwin-amd64 --build-arg BINARY=$(BINARY_NAME)-darwin-amd64 .
+	docker build -t $(IMAGE_TAG):windows-amd64 --build-arg BINARY=$(BINARY_NAME)-windows-amd64.exe .
 
 clean:
 	@if [ -f $(BINARY_NAME)-linux-amd64 ]; then rm $(BINARY_NAME)-linux-amd64; fi
