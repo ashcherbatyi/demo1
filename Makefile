@@ -1,4 +1,4 @@
-.PHONY: all clean linux arm macos windows
+.PHONY: all clean linux arm macos windows image
 
 BINARY_NAME=demo
 DOCKER_REGISTRY=demouser
@@ -9,7 +9,7 @@ all: linux arm macos windows
 
 linux:
 	docker run --rm -v $(PWD):/go/src/app -w /go/src/app $(GO_DOCKER_IMAGE) \
-		go build -buildvcs=false -o $(BINARY_NAME)-linux-amd64
+		env GOOS=linux GOARCH=amd64 go build -buildvcs=false -o $(BINARY_NAME)-linux-amd64
 
 arm:
 	docker run --rm -v $(PWD):/go/src/app -w /go/src/app $(GO_DOCKER_IMAGE) \
