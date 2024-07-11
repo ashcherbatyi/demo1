@@ -33,6 +33,3 @@ clean:
 	@if [ ! -z "$(shell docker images -q $(IMAGE_TAG):linux-arm64 2> /dev/null)" ]; then docker rmi -f $(IMAGE_TAG):linux-arm64; fi
 	@if [ ! -z "$(shell docker images -q $(IMAGE_TAG):darwin-amd64 2> /dev/null)" ]; then docker rmi -f $(IMAGE_TAG):darwin-amd64; fi
 	@if [ ! -z "$(shell docker images -q $(IMAGE_TAG):windows-amd64 2> /dev/null)" ]; then docker rmi -f $(IMAGE_TAG):windows-amd64; fi
-
-dep:
- go mod download
