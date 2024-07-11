@@ -32,7 +32,7 @@ build: format get
 	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o ${APP}-${TARGETOS}-${TARGETARCH}
 
 format:
-	go fmt ./...
+	gofmt -s -w ./
 
 get:
 	go get
