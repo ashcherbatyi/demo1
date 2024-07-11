@@ -9,9 +9,6 @@ REGISTRY = ghcr.io/ashcherbatyi
 
 all: linux arm macos windows
 
-get:
-	go get
-
 linux: TARGETOS = linux
 linux: TARGETARCH = amd64
 linux: login build image push
