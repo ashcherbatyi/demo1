@@ -3,6 +3,8 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 */
 package main
 
-func main() {
+import "fmt"
 
+func main() {
+	fmt.Println("hello world")
 }
