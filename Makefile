@@ -1,9 +1,11 @@
+# Універсальний Makefile для будь-якої платформи
 
 APP = demo
 VERSION = latest
-REGISTRY = quay.io/your_username
+REGISTRY = ghcr.io/ashcherbatyi
 
-.PHONY: all clean get linux arm macos windows build image push format
+
+.PHONY: all clean get linux arm macos windows build image push format login
 
 all: linux arm macos windows
 
@@ -12,19 +14,19 @@ get:
 
 linux: TARGETOS = linux
 linux: TARGETARCH = amd64
-linux: build image push
+linux: login build image push
 
 arm: TARGETOS = linux
 arm: TARGETARCH = arm64
-arm: build image push
+arm: login build image push
 
 macos: TARGETOS = darwin
 macos: TARGETARCH = amd64
-macos: build image push
+macos: login build image push
 
 windows: TARGETOS = windows
 windows: TARGETARCH = amd64
-windows: build image push
+windows: login build image push
 
 build: format get
 	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o ${APP}-${TARGETOS}-${TARGETARCH}
