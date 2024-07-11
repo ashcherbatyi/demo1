@@ -34,6 +34,9 @@ build: format get
 format:
 	go fmt ./...
 
+get:
+	go get
+
 image: build
 	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETOS}-${TARGETARCH} --build-arg BINARY=${APP}-${TARGETOS}-${TARGETARCH}
 
