@@ -1,63 +1,33 @@
-APP = demo
-VERSION = latest
-REGISTRY = ashcherbatyi
-GO_VERSION = 1.20.5
+.PHONY: all clean linux arm macos windows
 
-.PHONY: all clean get linux arm macos windows build image push format login
+BINARY_NAME=demo
+DOCKER_REGISTRY=demouser
+IMAGE_TAG=$(DOCKER_REGISTRY)/$(BINARY_NAME)
 
 all: linux arm macos windows
 
-check-go-version:
-	@if [ `go version | awk '{print $$3}' | sed 's/go//' | cut -d. -f1-2` \< ${GO_VERSION} ]; then \
-		echo "Installing Go ${GO_VERSION}..."; \
-		wget https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz; \
-		sudo tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz; \
-		export PATH=$PATH:/usr/local/go/bin; \
-		echo "Go ${GO_VERSION} installed."; \
-	else \
-		echo "Go version is up to date."; \
-	fi
+linux:
+	GOOS=linux GOARCH=amd64 go build -o $(BINARY_NAME)-linux-amd64
+	docker build -t $(IMAGE_TAG):linux-amd64 -f Dockerfile --build-arg BINARY=$(BINARY_NAME)-linux-amd64 .
 
-install-go: check-go-version
-	@command -v go >/dev/null 2>&1 || { \
-		echo "Go is not installed. Aborting."; \
-		exit 1; \
-	}
+arm:
+	GOOS=linux GOARCH=arm64 go build -o $(BINARY_NAME)-linux-arm64
+	docker build -t $(IMAGE_TAG):linux-arm64 -f Dockerfile --build-arg BINARY=$(BINARY_NAME)-linux-arm64 .
 
-get-deps: install-go
-	go get ./...
+macos:
+	GOOS=darwin GOARCH=amd64 go build -o $(BINARY_NAME)-darwin-amd64
+	docker build -t $(IMAGE_TAG):darwin-amd64 -f Dockerfile --build-arg BINARY=$(BINARY_NAME)-darwin-amd64 .
 
-linux: TARGETOS = linux
-linux: TARGETARCH = amd64
-linux: login build image push
-
-arm: TARGETOS = linux
-arm: TARGETARCH = arm64
-arm: login build image push
-
-macos: TARGETOS = darwin
-macos: TARGETARCH = amd64
-macos: login build image push
-
-windows: TARGETOS = windows
-windows: TARGETARCH = amd64
-windows: login build image push
-
-build: format get-deps
-	CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o ${APP}-${TARGETOS}-${TARGETARCH}
-
-format: install-go
-	go fmt ./...
-
-image: build
-	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETOS}-${TARGETARCH} --build-arg BINARY=${APP}-${TARGETOS}-${TARGETARCH}
+windows:
+	GOOS=windows GOARCH=amd64 go build -o $(BINARY_NAME)-windows-amd64.exe
+	docker build -t $(IMAGE_TAG):windows-amd64 -f Dockerfile --build-arg BINARY=$(BINARY_NAME)-windows-amd64.exe .
 
 clean:
-	@if [ -f ${APP}-linux-amd64 ]; then rm -f ${APP}-linux-amd64; fi
-	@if [ -f ${APP}-linux-arm64 ]; then rm -f ${APP}-linux-arm64; fi
-	@if [ -f ${APP}-darwin-amd64 ]; then rm -f ${APP}-darwin-amd64; fi
-	@if [ -f ${APP}-windows-amd64.exe ]; then rm -f ${APP}-windows-amd64.exe; fi
-	@if docker images -q ${REGISTRY}/${APP}:${VERSION}-linux-amd64; then docker rmi -f ${REGISTRY}/${APP}:${VERSION}-linux-amd64; fi
-	@if docker images -q ${REGISTRY}/${APP}:${VERSION}-linux-arm64; then docker rmi -f ${REGISTRY}/${APP}:${VERSION}-linux-arm64; fi
-	@if docker images -q ${REGISTRY}/${APP}:${VERSION}-darwin-amd64; then docker rmi -f ${REGISTRY}/${APP}:${VERSION}-darwin-amd64; fi
-	@if docker images -q ${REGISTRY}/${APP}:${VERSION}-windows-amd64; then docker rmi -f ${REGISTRY}/${APP}:${VERSION}-windows-amd64; fi
+	@if [ -f $(BINARY_NAME)-linux-amd64 ]; then rm $(BINARY_NAME)-linux-amd64; fi
+	@if [ -f $(BINARY_NAME)-linux-arm64 ]; then rm $(BINARY_NAME)-linux-arm64; fi
+	@if [ -f $(BINARY_NAME)-darwin-amd64 ]; then rm $(BINARY_NAME)-darwin-amd64; fi
+	@if [ -f $(BINARY_NAME)-windows-amd64.exe ]; then rm $(BINARY_NAME)-windows-amd64.exe; fi
+	@if [ ! -z "$(shell docker images -q $(IMAGE_TAG):linux-amd64 2> /dev/null)" ]; then docker rmi -f $(IMAGE_TAG):linux-amd64; fi
+	@if [ ! -z "$(shell docker images -q $(IMAGE_TAG):linux-arm64 2> /dev/null)" ]; then docker rmi -f $(IMAGE_TAG):linux-arm64; fi
+	@if [ ! -z "$(shell docker images -q $(IMAGE_TAG):darwin-amd64 2> /dev/null)" ]; then docker rmi -f $(IMAGE_TAG):darwin-amd64; fi
+	@if [ ! -z "$(shell docker images -q $(IMAGE_TAG):windows-amd64 2> /dev/null)" ]; then docker rmi -f $(IMAGE_TAG):windows-amd64; fi
