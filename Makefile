@@ -38,8 +38,6 @@ build: format get
 image: build
 	docker build . -t ${REGISTRY}/${APP}:${VERSION}-${TARGETOS}-${TARGETARCH} --build-arg BINARY=${APP}-${TARGETOS}-${TARGETARCH}
 
-push: image
-	docker push ${REGISTRY}/${APP}:${VERSION}-${TARGETOS}-${TARGETARCH}
 
 clean:
 	@if [ -f ${APP}-linux-amd64 ]; then rm -f ${APP}-linux-amd64; fi
