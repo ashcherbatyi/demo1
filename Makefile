@@ -2,7 +2,7 @@
 
 APP = demo
 VERSION = latest
-REGISTRY = ghcr.io/ashcherbatyi
+REGISTRY = ashcherbatyi
 
 
 .PHONY: all clean get linux arm macos windows build image push format login
