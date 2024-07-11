@@ -1,12 +1,10 @@
 APP_NAME=demo
 
-
 QUAY_REPO=quay.io/your_username
 LINUX_IMAGE_TAG=$(QUAY_REPO)/$(APP_NAME):linux
 ARM_IMAGE_TAG=$(QUAY_REPO)/$(APP_NAME):arm
 MACOS_IMAGE_TAG=$(QUAY_REPO)/$(APP_NAME):macos
 WINDOWS_IMAGE_TAG=$(QUAY_REPO)/$(APP_NAME):windows
-
 
 BUILD_DIR=build
 
