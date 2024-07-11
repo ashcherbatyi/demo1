@@ -1,30 +1,37 @@
 APP_NAME=demo
 
-LINUX_IMAGE_TAG=$(APP_NAME):linux
-ARM_IMAGE_TAG=$(APP_NAME):arm
-MACOS_IMAGE_TAG=$(APP_NAME):macos
-WINDOWS_IMAGE_TAG=$(APP_NAME):windows
+
+QUAY_REPO=quay.io/your_username
+LINUX_IMAGE_TAG=$(QUAY_REPO)/$(APP_NAME):linux
+ARM_IMAGE_TAG=$(QUAY_REPO)/$(APP_NAME):arm
+MACOS_IMAGE_TAG=$(QUAY_REPO)/$(APP_NAME):macos
+WINDOWS_IMAGE_TAG=$(QUAY_REPO)/$(APP_NAME):windows
+
 
 BUILD_DIR=build
 
 .PHONY: all clean linux arm macos windows docker-build-linux docker-build-arm docker-build-macos docker-build-windows
 
-all: clean linux arm macos windows
+all: linux arm macos windows
 
 clean:
 	rm -rf $(BUILD_DIR)
 	docker rmi -f $(LINUX_IMAGE_TAG) $(ARM_IMAGE_TAG) $(MACOS_IMAGE_TAG) $(WINDOWS_IMAGE_TAG) || true
 
 linux:
+	mkdir -p $(BUILD_DIR)
 	GOOS=linux GOARCH=amd64 go build -o $(BUILD_DIR)/$(APP_NAME)-linux
 
 arm:
+	mkdir -p $(BUILD_DIR)
 	GOOS=linux GOARCH=arm64 go build -o $(BUILD_DIR)/$(APP_NAME)-arm
 
 macos:
+	mkdir -p $(BUILD_DIR)
 	GOOS=darwin GOARCH=amd64 go build -o $(BUILD_DIR)/$(APP_NAME)-macos
 
 windows:
+	mkdir -p $(BUILD_DIR)
 	GOOS=windows GOARCH=amd64 go build -o $(BUILD_DIR)/$(APP_NAME)-windows.exe
 
 docker-build-linux: linux

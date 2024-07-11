@@ -5,5 +5,5 @@ COPY ${BINARY} /usr/local/bin/myapp
 COPY . /app
 WORKDIR /app
 
-# Start to Tests
+# Запуск тестів
 CMD ["go", "test", "./..."]
