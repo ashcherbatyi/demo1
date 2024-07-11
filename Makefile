@@ -3,20 +3,25 @@
 BINARY_NAME=demo
 DOCKER_REGISTRY=demouser
 IMAGE_TAG=$(DOCKER_REGISTRY)/$(BINARY_NAME)
+GO_DOCKER_IMAGE=quay.io/projectquay/golang:1.20
 
 all: linux arm macos windows
 
 linux:
-	GOOS=linux GOARCH=amd64 go build -o $(BINARY_NAME)-linux-amd64
+	docker run --rm -v $(PWD):/go/src/app -w /go/src/app $(GO_DOCKER_IMAGE) \
+		go build -buildvcs=false -o $(BINARY_NAME)-linux-amd64
 
 arm:
-	GOOS=linux GOARCH=arm64 go build -o $(BINARY_NAME)-linux-arm64
+	docker run --rm -v $(PWD):/go/src/app -w /go/src/app $(GO_DOCKER_IMAGE) \
+		env GOOS=linux GOARCH=arm64 go build -buildvcs=false -o $(BINARY_NAME)-linux-arm64
 
 macos:
-	GOOS=darwin GOARCH=amd64 go build -o $(BINARY_NAME)-darwin-amd64
+	docker run --rm -v $(PWD):/go/src/app -w /go/src/app $(GO_DOCKER_IMAGE) \
+		env GOOS=darwin GOARCH=amd64 go build -buildvcs=false -o $(BINARY_NAME)-darwin-amd64
 
 windows:
-	GOOS=windows GOARCH=amd64 go build -o $(BINARY_NAME)-windows-amd64.exe
+	docker run --rm -v $(PWD):/go/src/app -w /go/src/app $(GO_DOCKER_IMAGE) \
+		env GOOS=windows GOARCH=amd64 go build -buildvcs=false -o $(BINARY_NAME)-windows-amd64.exe
 
 image: linux arm macos windows
 	docker build -t $(IMAGE_TAG):linux-amd64 --build-arg BINARY=$(BINARY_NAME)-linux-amd64 .
